@@ -1,0 +1,26 @@
+[
+  {
+    "subject": "My first message",
+    "body": "amet fugiat consectur ut consequat aliquip esse mollit qui"
+  },
+  {
+    "subject": "my second message",
+    "body": "amet fugiat consectur ut consequat aliquip esse mollit qui"
+  },
+  {
+    "subject": "you won lottery",
+    "body": "amet fugiat consectur ut consequat aliquip esse mollit qui"
+  },
+  {
+    "subject": "you should read this message",
+    "body": "amet fugiat consectur ut consequat aliquip esse mollit qui"
+  },
+  {
+    "subject": "you won lottery again",
+    "body": "amet fugiat consectur ut consequat aliquip esse mollit qui"
+  },
+  {
+    "subject": "Is Automatic Serialization Working?",
+    "body": "amet fugiat consectur ut consequat aliquip esse mollit qui"
+  }
+]

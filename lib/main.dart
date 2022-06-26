@@ -1,3 +1,4 @@
+import 'package:appcontacts/messagelist.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -33,48 +34,7 @@ class EMailApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  final String title;
-
-  var messages = const [
-    'my first message',
-    'my second message',
-    'you won lottery',
-    'you should read this message',
-    'you won lottery again',
-  ];
-
-  MyHomePage({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(this.title),
-      ),
-      body: ListView.separated(
-        itemCount: messages.length,
-        itemBuilder: (BuildContext context, int index) {
-          var title = messages[index];
-          return ListTile(
-            title: Text(title),
-            leading: CircleAvatar(child: const Text('PZ')),
-            //trailing: CircleAvatar(),
-            isThreeLine: true,
-            subtitle: const Text(
-                'Another text ... traduzindo esta esta é uma linha muito longa'
-                'e nao deve caber em uma unica linha.'),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(
-          color: Colors.red,
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      home: MessageList(title: 'Flutter Demo Home Page'),
     );
   }
 }
