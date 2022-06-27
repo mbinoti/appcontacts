@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:appcontacts/message.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 class MessageList extends StatefulWidget {
   final String title;
@@ -14,50 +15,66 @@ class MessageList extends StatefulWidget {
 }
 
 class _MessageListState extends State<MessageList> {
-  var messages = const [];
-  Future loadMessageList() async {
-    String content = await rootBundle.loadString('data/message.json');
-    List collection = json.decode(content);
-    List<Message> _messages =
-        collection.map((e) => Message.fromJson(e)).toList();
-    print(content);
-    setState(() {
-      messages = _messages;
-    });
-  }
+  Future<List<Message>>? messages;
+  // bool isLoading = true;
 
   @override
   void initState() {
-    loadMessageList();
+    messages = Message.browse();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView.separated(
-        itemCount: messages.length,
-        itemBuilder: (BuildContext context, int index) {
-          Message message = messages[index];
-          return ListTile(
-            title: Text(message.subject!),
-            leading: CircleAvatar(child: const Text('PZ')),
-            //trailing: CircleAvatar(),
-            isThreeLine: true,
-            subtitle: Text(
-              message.body!,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                var _messages = Message.browse();
+                setState(() {
+                  messages = _messages;
+                });
+              },
             ),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(
-          color: Colors.red,
+          ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        body: FutureBuilder(
+          future: messages,
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return Center(child: CircularProgressIndicator());
+              case ConnectionState.done:
+                if (snapshot.hasError) {
+                  return Text('There was an error: ${snapshot.error}');
+                }
+                var messages = snapshot.data;
+                return ListView.separated(
+                  itemCount: messages.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    Message message = messages[index];
+                    return ListTile(
+                      title: Text(message.subject!),
+                      leading: const CircleAvatar(child: Text('PZ')),
+                      //trailing: CircleAvatar(),
+                      isThreeLine: true,
+                      subtitle: Text(
+                        message.body!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const Divider(color: Colors.red),
+                ); // This trailing comma makes auto-formatting nicer for build methods.
+            }
+          },
+        ));
   }
 }
