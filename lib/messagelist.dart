@@ -9,6 +9,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 //import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:flutter_slidable/flutter_slidable.dart';
+
 class MessageList extends StatefulWidget {
   final String title;
 
@@ -43,9 +45,10 @@ class _MessageListState extends State<MessageList> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () async {
-              var _messages = await Message.browse();
+              // var _messages = await Message.browse();
               setState(() {
-                messages = _messages;
+                // messages = _messages;
+                future = Message.browse();
               });
             },
           ),
@@ -130,23 +133,44 @@ class _MessageListState extends State<MessageList> {
                 itemCount: messages.length,
                 itemBuilder: (BuildContext context, int index) {
                   Message message = messages[index];
-                  return ListTile(
-                    title: Text(message.subject!),
-                    leading: const CircleAvatar(child: Text('PZ')),
-                    //trailing: CircleAvatar(),
-                    isThreeLine: true,
-                    subtitle: Text(
-                      message.body!,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return MessageDetail(
-                            subject: message.subject!, body: message.body!);
-                      }));
+                  return Dismissible(
+                    key: ObjectKey(message),
+                    onDismissed: (direction) {
+                      setState(() {
+                        messages.removeAt(index);
+                      });
                     },
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const <Widget>[
+                          Icon(FontAwesomeIcons.trash, color: Colors.white),
+                          Padding(padding: EdgeInsets.all(4)),
+                          Text('Delete', style: TextStyle(color: Colors.white))
+                        ],
+                      ),
+                    ),
+                    child: ListTile(
+                      title: Text(message.subject!),
+                      leading: const CircleAvatar(child: Text('PZ')),
+                      //trailing: CircleAvatar(),
+                      isThreeLine: true,
+                      subtitle: Text(
+                        message.body!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return MessageDetail(
+                              subject: message.subject!, body: message.body!);
+                        }));
+                      },
+                    ),
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) =>
