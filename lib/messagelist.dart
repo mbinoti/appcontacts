@@ -5,6 +5,7 @@ import 'package:appcontacts/message.dart';
 import 'package:appcontacts/message_compose.dart';
 import 'package:appcontacts/message_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 //import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,13 +19,19 @@ class MessageList extends StatefulWidget {
 }
 
 class _MessageListState extends State<MessageList> {
-  Future<List<Message>>? messages;
+  Future<List<Message>>? future;
+  List<Message>? messages;
   // bool isLoading = true;
 
   @override
   void initState() {
-    messages = Message.browse();
     super.initState();
+    fetch();
+  }
+
+  void fetch() async {
+    future = Message.browse();
+    messages = await future;
   }
 
   @override
@@ -35,8 +42,8 @@ class _MessageListState extends State<MessageList> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () {
-              var _messages = Message.browse();
+            onPressed: () async {
+              var _messages = await Message.browse();
               setState(() {
                 messages = _messages;
               });
@@ -44,14 +51,76 @@ class _MessageListState extends State<MessageList> {
           ),
         ],
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: const Text('Marcos'),
+              accountEmail: const Text('mbinoti@gmail.com'),
+              currentAccountPicture: (const CircleAvatar(
+                  backgroundImage:
+                      NetworkImage('https://picsum.photos/250?image=9'))),
+              otherAccountsPictures: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const AlertDialog(
+                              title: Text('Adding new account...'));
+                        });
+                  },
+                  child: const CircleAvatar(child: Icon(Icons.add)),
+                ),
+              ],
+            ),
+            // const DrawerHeader(
+            //   decoration: BoxDecoration(color: Colors.red),
+            //   child: Text('Drawer Header'),
+            //),
+            ListTile(
+              leading: const Icon(FontAwesomeIcons.inbox),
+              title: const Text('Inbox'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(FontAwesomeIcons.penToSquare),
+              title: const Text('Draft'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(FontAwesomeIcons.boxArchive),
+              title: const Text('Archive'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(FontAwesomeIcons.paperPlane),
+              title: const Text('Sent'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(FontAwesomeIcons.trash),
+              title: const Text('Trash'),
+              onTap: () {},
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(FontAwesomeIcons.trash),
+              title: const Text('Trash'),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
       body: FutureBuilder(
-        future: messages,
+        future: future,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             case ConnectionState.done:
               if (snapshot.hasError) {
                 return Text('There was an error: ${snapshot.error}');
@@ -81,12 +150,34 @@ class _MessageListState extends State<MessageList> {
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(color: Colors.red),
+                    const Divider(color: Colors.blue),
               ); // This trailing comma makes auto-formatting nicer for build methods.
           }
         },
       ),
-      floatingActionButton: ComposeButton(context),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          Message? message = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => MessageCompose(),
+            ),
+          );
+
+          if (message != null) {
+            messages!.add(message);
+            // ignore: use_build_context_synchronously
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(message.subject!), backgroundColor: Colors.red),
+            );
+          }
+          setState(() {
+            messages = messages;
+          });
+        },
+      ),
     );
   }
 }

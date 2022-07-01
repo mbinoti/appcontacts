@@ -20,7 +20,7 @@ class Message {
 
     var response = await http.get(url);
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
 
     String content = response.body;
     // http.Response response = Uri.parse(

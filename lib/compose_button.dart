@@ -1,24 +1,30 @@
+import 'package:appcontacts/message.dart';
 import 'package:appcontacts/message_compose.dart';
 import 'package:flutter/material.dart';
 
 class ComposeButton extends StatelessWidget {
-  const ComposeButton(BuildContext context, {Key? key}) : super(key: key);
-
+  final List<Message>? messages;
+  ComposeButton(this.messages);
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      child: Icon(Icons.add),
+      child: const Icon(Icons.add),
       onPressed: () async {
-        String intention = await Navigator.push(
+        Message? message = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => MessageCompose(),
           ),
         );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(intention), backgroundColor: Colors.red),
-        );
+        if (message != null) {
+          messages!.add(message);
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(message.subject!), backgroundColor: Colors.red),
+          );
+        }
       },
     );
   }
