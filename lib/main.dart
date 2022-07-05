@@ -1,8 +1,25 @@
+import 'package:appcontacts/app.dart';
 import 'package:appcontacts/messagelist.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const EMailApp());
+}
+
+class EMailApp extends StatelessWidget {
+  const EMailApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+      ),
+      home: App(),
+      //MessageList(title: 'Flutter Demo Home Page'),
+    );
+  }
 }
 
 class ContactsScreen extends StatelessWidget {
@@ -20,21 +37,6 @@ class ContactsScreen extends StatelessWidget {
           );
         }),
       ),
-    );
-  }
-}
-
-class EMailApp extends StatelessWidget {
-  const EMailApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-      ),
-      home: MessageList(title: 'Flutter Demo Home Page'),
     );
   }
 }
